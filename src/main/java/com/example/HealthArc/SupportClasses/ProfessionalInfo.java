@@ -1,7 +1,10 @@
 package com.example.HealthArc.SupportClasses;
 
+import org.springframework.stereotype.Component;
+
 import java.util.List;
 
+@Component
 public class ProfessionalInfo {
     private String registrationNumber;
 
@@ -13,5 +16,6 @@ public class ProfessionalInfo {
 
     private List<WorkExperience> workExperience;
 
-    private List<String> awards;
+//    private List<String> awards;
 }
+
