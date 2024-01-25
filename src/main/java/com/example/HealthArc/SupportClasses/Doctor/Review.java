@@ -1,9 +1,12 @@
-package com.example.HealthArc.SupportClasses;
+package com.example.HealthArc.SupportClasses.Doctor;
 
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
+
 @Component
 public class Review {
+
 
     private String patientName;
 
@@ -11,6 +14,6 @@ public class Review {
 
     private String comment;
 
-    private String date;
+    private Date date;
 
 }

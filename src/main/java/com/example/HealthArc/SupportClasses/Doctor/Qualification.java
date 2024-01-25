@@ -1,4 +1,4 @@
-package com.example.HealthArc.SupportClasses;
+package com.example.HealthArc.SupportClasses.Doctor;
 
 import org.springframework.stereotype.Component;
 

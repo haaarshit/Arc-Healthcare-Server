@@ -1,5 +1,6 @@
-package com.example.HealthArc.SupportClasses;
+package com.example.HealthArc.SupportClasses.Doctor;
 
+import com.example.HealthArc.SupportClasses.WorkExperience;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -11,8 +12,6 @@ public class ProfessionalInfo {
     private List<Qualification> qualifications;
 
     private List<String> specializations;
-
-    private List<Certification> certifications;
 
     private List<WorkExperience> workExperience;
 

@@ -1,6 +1,6 @@
 package com.example.HealthArc.Controllers;
 
-import com.example.HealthArc.Models.Doctor.Doctor;
+import com.example.HealthArc.Models.Doctor;
 import com.example.HealthArc.SupportClasses.UserRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

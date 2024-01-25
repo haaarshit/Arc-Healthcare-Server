@@ -8,7 +8,6 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.authorizeHttpRequests((authz)-> authz
-//                        .requestMatchers("api/v1/doctor/**").authenticated()
                         .anyRequest()
                         .permitAll()
                 ).httpBasic(Customizer.withDefaults());
