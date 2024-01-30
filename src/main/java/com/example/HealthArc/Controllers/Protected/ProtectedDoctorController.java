@@ -7,26 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("auth/api/doctor")
+@RequestMapping("api/auth/doctor")
 public class ProtectedDoctorController {
-
-    // *************************** doctor signup *******************************//
-    @PostMapping("/add")
-    ResponseEntity<String> addDoctor(@RequestBody Doctor doctor){
-        return new ResponseEntity<>("", HttpStatus.OK);
-    }
-
-    //**************************** Doctor login ********************************//
-    @GetMapping("/login")
-    ResponseEntity<String> loginDoctor(@RequestBody UserRequest userRequest) {
-        return new ResponseEntity<>("", HttpStatus.OK);
-    }
-
-    // ****************************  get all doctors    ***********************************//
-
-    // ****************************  add doctor         ***********************************//
-
-    // ****************************  get doctor by id   **********************************//
 
     // ****************************  update doctor data ********************************//
 

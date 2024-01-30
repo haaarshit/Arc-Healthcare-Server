@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("public/api/patient")
+@RequestMapping("api/public/patient")
 public class PatientController {
     // patient signup
     // patient login
