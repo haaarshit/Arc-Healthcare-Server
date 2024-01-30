@@ -27,10 +27,6 @@
 //            System.out.println("Doctor not found");
 //            throw new UsernameNotFoundException("No doctor found.");
 //        }
-//        if(doctor.isPresent()){
-//
-//        }
-//        return new Doctor();
-//
+//        return doctor.get();
 //    }
 //}
