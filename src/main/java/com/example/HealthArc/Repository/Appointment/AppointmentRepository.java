@@ -1,11 +1,9 @@
-package com.example.HealthArc.Repository.Doctor;
+package com.example.HealthArc.Repository.Appointment;
 
-import com.example.HealthArc.Models.Doctor;
+import com.example.HealthArc.Models.Appointment;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import java.util.Optional;
 
 
-public interface DoctorRepository extends MongoRepository<Doctor,String> {
-    Optional<Doctor> findByEmail(String email);
+public interface AppointmentRepository extends MongoRepository<Appointment,String> {
 }

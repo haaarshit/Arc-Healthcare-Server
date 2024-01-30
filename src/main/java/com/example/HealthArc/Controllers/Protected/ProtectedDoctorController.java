@@ -1,4 +1,4 @@
-package com.example.HealthArc.Controllers.Public;
+package com.example.HealthArc.Controllers.Protected;
 
 import com.example.HealthArc.Models.Doctor;
 import com.example.HealthArc.SupportClasses.UserRequest;
@@ -6,8 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController("api/public/doctor")
-public class DoctorController {
+@RestController
+@RequestMapping("auth/api/doctor")
+public class ProtectedDoctorController {
 
     // *************************** doctor signup *******************************//
     @PostMapping("/add")

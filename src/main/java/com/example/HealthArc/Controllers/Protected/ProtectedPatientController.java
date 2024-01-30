@@ -1,9 +1,11 @@
-package com.example.HealthArc.Controllers.Public;
+package com.example.HealthArc.Controllers.Protected;
 
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController("api/public/patient")
-public class PatientController {
+@RestController
+@RequestMapping("auth/api/doctor")
+public class ProtectedPatientController {
     // patient signup
     // patient login
     // get all patients

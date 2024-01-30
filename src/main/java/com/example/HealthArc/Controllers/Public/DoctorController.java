@@ -1,18 +1,23 @@
-package com.example.HealthArc.Controllers;
+package com.example.HealthArc.Controllers.Public;
 
 import com.example.HealthArc.Models.Doctor;
+import com.example.HealthArc.Services.Doctor.DoctorService;
 import com.example.HealthArc.SupportClasses.UserRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController("api/v1/doctor")
+@RestController
+@RequestMapping("public/api/doctor")
 public class DoctorController {
+
+//    service
+    DoctorService doctorService;
 
     // *************************** doctor signup *******************************//
     @PostMapping("/add")
-    ResponseEntity<String> addDoctor(@RequestBody Doctor doctor){
-        return new ResponseEntity<>("", HttpStatus.OK);
+    ResponseEntity<Doctor> addDoctor(@RequestBody Doctor doctor){
+        return doctorService.addDoctor(doctor);
     }
 
     //**************************** Doctor login ********************************//
@@ -23,10 +28,8 @@ public class DoctorController {
 
     // ****************************  get all doctors    ***********************************//
 
-    // ****************************  add doctor         ***********************************//
 
     // ****************************  get doctor by id   **********************************//
 
-    // ****************************  update doctor data ********************************//
 
 }

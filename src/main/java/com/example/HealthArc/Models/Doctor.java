@@ -24,14 +24,15 @@ import java.util.List;
 @Setter
 public class Doctor implements UserDetails, CredentialsContainer {
     @Id
-    private ObjectId id;
+    private String id;
     @Indexed(unique = true)
     private String email;
-
-    private String password;
-
     @Indexed(unique = true)
     private String phone;
+
+    private String password;
+    private String avatar;
+
     private DoctorPersonalInfo personalInfo;
     private Address address;
     private ProfessionalInfo professionalInfo;

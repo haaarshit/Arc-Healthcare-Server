@@ -1,8 +1,10 @@
-package com.example.HealthArc.Controllers;
+package com.example.HealthArc.Controllers.Public;
 
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController("api/v1/patient")
+@RestController
+@RequestMapping("public/api/patient")
 public class PatientController {
     // patient signup
     // patient login
