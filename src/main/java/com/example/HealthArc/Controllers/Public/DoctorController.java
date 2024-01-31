@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 public class DoctorController {
 
 //    service
-
     @Autowired
     DoctorService doctorService;
 
@@ -24,15 +23,21 @@ public class DoctorController {
     }
 
     //**************************** Doctor login ********************************//
-    @GetMapping("/login")
+    @PostMapping("/login")
     ResponseEntity<?> loginDoctor(@RequestBody UserRequest userRequest) {
         return doctorService.loginDoctor(userRequest);
     }
 
     // ****************************  get all doctors    ***********************************//
-
+    @GetMapping("/all")
+    ResponseEntity<?> getAllDoctor() {
+        return doctorService.getAllDoctors();
+    }
 
     // ****************************  get doctor by id   **********************************//
-
+    @GetMapping("/{id}")
+    ResponseEntity<?> getDoctorById(@PathVariable("id") String id){
+        return doctorService.getDoctorById(id);
+    }
 
 }
