@@ -3,40 +3,54 @@ package com.example.HealthArc.Services.Doctor;
 import com.example.HealthArc.Models.Doctor;
 import com.example.HealthArc.Repository.Doctor.DoctorRepository;
 import com.example.HealthArc.Repository.Patient.PatientRepository;
-import com.example.HealthArc.SupportClasses.DateUtil;
+import com.example.HealthArc.Security.JwtService;
+import com.example.HealthArc.Security.SecurityConfig;
+import com.example.HealthArc.Security.UserDetailServiceConfig.DoctorUserDetailService;
 import com.example.HealthArc.SupportClasses.Doctor.DoctorListResponse;
 import com.example.HealthArc.SupportClasses.Doctor.DoctorResponse;
+import com.example.HealthArc.SupportClasses.Doctor.Review;
 import com.example.HealthArc.SupportClasses.PrintErrorMessage;
 import com.example.HealthArc.SupportClasses.UserRequest;
+import com.sun.net.httpserver.Headers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.server.Cookie;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.print.Doc;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class DoctorService {
     @Autowired
-    DoctorRepository doctorRepository;
+    private DoctorRepository doctorRepository;
     @Autowired
-    PatientRepository patientRepository;
+    private PatientRepository patientRepository;
     @Autowired
-    DateUtil dateUtil;
+    private DoctorUserDetailService doctorUserDetailService;
+    @Autowired
+    JwtService jwtService;
+    @Autowired
+    SecurityConfig securityConfig;
     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     // ************************ Signup ***************************
     public ResponseEntity<?>  addDoctor(Doctor doctor){
         String email = doctor.getEmail();
-        HttpHeaders header = new HttpHeaders();
         try {
             Optional<Doctor> isAlreadyExist = doctorRepository.findByEmail(email);
             if (isAlreadyExist.isPresent() || patientRepository.findByEmail(email).isPresent()) {
                 return ResponseEntity.badRequest().body("User Already Exist");
             }
-            // convert string to date
 
             String avatar = doctor.getAvatar();
             // todo => upload to cloudinary
@@ -44,10 +58,16 @@ public class DoctorService {
             String hashedPassword = passwordEncoder.encode(doctor.getPassword());
             doctor.setPassword(hashedPassword);
             doctor.setAvatar(avatarUrl);
-
             Doctor saved = doctorRepository.save(doctor);
+
+            UserDetails userDetails = doctorUserDetailService.loadUserByUsername(email);
+            String token = this.jwtService.generateToken(userDetails);
+
+            HttpHeaders header = new HttpHeaders();
+            header.set("token",token);
+
             DoctorResponse response = new DoctorResponse().returnResponse(saved);
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
+            return ResponseEntity.ok().headers(header).body(response);
         }
         catch (Exception e){
             new PrintErrorMessage(e);
@@ -57,23 +77,23 @@ public class DoctorService {
 
     // ********************** Login ****************************
     public ResponseEntity<?> loginDoctor(UserRequest request){
-        String mail = request.getEmail();
+        String email = request.getEmail();
         String password = request.getPassword();
-
+        this.doAuthenticate(email,password);
+        UserDetails userDetails = doctorUserDetailService.loadUserByUsername(email);
+        String token = this.jwtService.generateToken(userDetails);
+        HttpHeaders header = new HttpHeaders();
+        header.set("token",token);
+        System.out.println("token "+token);
+        // todo => add token in cookie
         try{
-            Optional<Doctor> isDoctor = doctorRepository.findByEmail(mail);
+            Optional<Doctor> isDoctor = doctorRepository.findByEmail(email);
             if(isDoctor.isEmpty()){
                 return ResponseEntity.badRequest().body(null);
             }
             Doctor doctor = isDoctor.get();
-            // todo=> decrypt and compare password
-            if(passwordEncoder.matches(password,doctor.getPassword())){
-                DoctorResponse response = new DoctorResponse().returnResponse(doctor);
-                 return new ResponseEntity<>(response,HttpStatus.OK);
-            }
-            else{
-                return new ResponseEntity<>("Invalid Credentials",HttpStatus.UNAUTHORIZED);
-            }
+            DoctorResponse response = new DoctorResponse().returnResponse(doctor);
+            return ResponseEntity.ok().headers(header).body(response);
         }
         catch(Exception e){
             new PrintErrorMessage(e);
@@ -112,4 +132,36 @@ public class DoctorService {
             return ResponseEntity.internalServerError().body("Internal Server Error");
         }
     }
+
+    // ******************* Update Doctor **********************
+    public ResponseEntity<?> addReview(Review review,String id){
+        try{
+            Optional<Doctor> isDoctor = doctorRepository.findById(id);
+            if(isDoctor.isEmpty()) return ResponseEntity.badRequest().body("Doctor Not found");
+            Doctor doctor = isDoctor.get();
+            doctor.getReviews().add(review);
+            doctorRepository.save(doctor);
+            return ResponseEntity.ok().body(doctor);
+        }
+        catch (Exception e){
+            new PrintErrorMessage(e);
+            return ResponseEntity.internalServerError().body("Got some error");
+        }
+    }
+
+    // ****************** Authentication methods ***************************
+    private void doAuthenticate(String email, String password) {
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, password);
+        try {
+            securityConfig.doctorAuthenticationProvider().authenticate(authentication);
+        }
+        catch (BadCredentialsException e) {
+            throw new BadCredentialsException(" Invalid Username or Password  !!");
+        }
+    }
+    @ExceptionHandler(BadCredentialsException.class)
+    public String exceptionHandler() {
+        return "Credentials Invalid !!";
+    }
+
 }
