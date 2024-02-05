@@ -36,10 +36,10 @@ public class DoctorController {
     }
 
     // ****************************  get doctor by id   **********************************//
-    @GetMapping("/{id}")
-    ResponseEntity<?> getDoctorById(@PathVariable("id") String id){
-        return doctorService.getDoctorById(id);
-    }
+//    @GetMapping("/{id}")
+//    ResponseEntity<?> getDoctorById(@PathVariable("id") String id){
+//        return doctorService.getDoctorById(id);
+//    }
 
 
 }

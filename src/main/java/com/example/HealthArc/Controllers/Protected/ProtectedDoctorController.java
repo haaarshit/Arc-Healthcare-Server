@@ -1,7 +1,9 @@
 package com.example.HealthArc.Controllers.Protected;
 
+import com.example.HealthArc.Models.Appointment;
 import com.example.HealthArc.Security.JwtService;
 import com.example.HealthArc.Services.Doctor.DoctorService;
+import com.example.HealthArc.SupportClasses.Appointment.UpdateAppointmentRequest;
 import com.example.HealthArc.SupportClasses.Doctor.Availability;
 import com.example.HealthArc.SupportClasses.Doctor.ProfessionalInfo;
 import com.example.HealthArc.SupportClasses.Patient.UpdatePassword;
@@ -17,12 +19,13 @@ public class ProtectedDoctorController {
     @Autowired
     DoctorService doctorService;
 
+    /*
+    Secured routes
+    Only authenticated user with Authorization token can access these routes
+    */
+
+
     // ****************************  update doctor data ********************************//
-    @GetMapping("/profile")
-    ResponseEntity<?> getDoctorProfile(@RequestHeader("Authorization") String header){
-        String username =  service.extractUsername(header.substring(7));
-        return ResponseEntity.ok().body("Authenticated your email is "+username);
-    }
 
     @PutMapping("/update-password")
     ResponseEntity<?> updateDoctorPassword(@RequestBody UpdatePassword password, @RequestHeader("Authorization") String header){
@@ -44,4 +47,28 @@ public class ProtectedDoctorController {
         return doctorService.updateAvailability(availability,header);
     }
 
+    // ******************** handle appointment
+    // create appointment
+    @PostMapping("/create-appointment")
+    ResponseEntity<?> createAppointment(@RequestBody Appointment appointment){
+        return doctorService.createAppointment(appointment);
+    }
+
+    // get doctor dashboard
+    @GetMapping("/dashboard")
+    ResponseEntity<?> getAllAppointments(@RequestHeader("Authorization") String header){
+        return doctorService.getDoctorDashboard(header);
+    }
+
+    // returns the patient profile to doctor
+    @GetMapping("/profile/{id}")
+    ResponseEntity<?> getPatientProfile(@PathVariable("id") String patientId,@RequestHeader("Authorization") String header){
+        return doctorService.getPatientProfileForDoctor(patientId,header);
+    }
+
+    // doctor can update the appointment properties
+    @PutMapping("/appointment/update/{id}")
+    ResponseEntity<?> updateAppointment(@PathVariable("id") String id, @RequestBody UpdateAppointmentRequest updateAppoinrmentRequest){
+        return doctorService.updateAppointment(id,updateAppoinrmentRequest);
+    }
 }

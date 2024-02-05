@@ -1,23 +1,24 @@
 package com.example.HealthArc.Services.Doctor;
 
+import com.example.HealthArc.Models.Appointment;
 import com.example.HealthArc.Models.Doctor;
+import com.example.HealthArc.Models.Patient;
 import com.example.HealthArc.Repository.Doctor.DoctorRepository;
 import com.example.HealthArc.Repository.Patient.PatientRepository;
 import com.example.HealthArc.Security.JwtService;
 import com.example.HealthArc.Security.SecurityConfig;
 import com.example.HealthArc.Security.UserDetailServiceConfig.DoctorUserDetailService;
+import com.example.HealthArc.Services.Appointment.AppointmentService;
 import com.example.HealthArc.Services.Mail.EmailService;
+import com.example.HealthArc.SupportClasses.Appointment.UpdateAppointmentRequest;
 import com.example.HealthArc.SupportClasses.Doctor.*;
+import com.example.HealthArc.SupportClasses.Patient.PatientResponse;
 import com.example.HealthArc.SupportClasses.PrintErrorMessage;
 import com.example.HealthArc.SupportClasses.UserRequest;
-import com.example.HealthArc.SupportClasses.WorkExperience;
-import com.sun.net.httpserver.Headers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.server.Cookie;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,7 +26,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import javax.print.Doc;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,14 +36,16 @@ public class DoctorService {
     @Autowired
     private PatientRepository patientRepository;
     @Autowired
+    private AppointmentService appointmentService;
+    @Autowired
     EmailService emailService;
     @Autowired
     private DoctorUserDetailService doctorUserDetailService;
     @Autowired
-    JwtService jwtService;
+    private JwtService jwtService;
     @Autowired
-    SecurityConfig securityConfig;
-    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private SecurityConfig securityConfig;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     // ************************ Signup ***************************
     public ResponseEntity<?>  addDoctor(Doctor doctor){
@@ -143,7 +145,10 @@ public class DoctorService {
             if(isDoctor.isEmpty()) return ResponseEntity.badRequest().body("Doctor Not found");
             Doctor doctor = isDoctor.get();
             doctor.getReviews().add(review);
+            doctor.setTotalRating(doctor.getTotalRating() + review.getRating());
+            doctor.setPeopleRated(doctor.getPeopleRated()+1); // can find average rating from = total_rating / people_rated
             doctorRepository.save(doctor);
+
             return ResponseEntity.ok().body(doctor);
         }
         catch (Exception e){
@@ -274,6 +279,79 @@ public class DoctorService {
             return ResponseEntity.internalServerError().body("Got Some error while updating password");
         }
     }
+
+
+    // ******************** APPOINTMENT *************************
+    // ****************** createAppointment ************************
+    public ResponseEntity<?> createAppointment(Appointment appointment){
+        try{
+            Appointment appointment1 = appointmentService.createAppointment(appointment);
+            return new ResponseEntity<>(appointment1,HttpStatus.CREATED);
+        }
+        catch (Exception e){
+            new PrintErrorMessage(e);
+            return ResponseEntity.internalServerError().body("Got Some error while updating password");
+        }
+        
+    }
+
+    // ****************** findAllAppointmentByDoctor ****************
+    public ResponseEntity<?> getDoctorDashboard(String reqHeader){
+        try{
+            String username =  jwtService.extractUsername(reqHeader.substring(7));
+            Optional<Doctor> isDoctor = doctorRepository.findByEmail(username);
+            if(isDoctor.isEmpty()){
+                return ResponseEntity.badRequest().body("Invalid doctor");
+            }
+            Doctor doctor = isDoctor.get();
+            List<Appointment> appointmentList = appointmentService.findAppointmentsByDoctor(doctor.getId());
+            DoctorDashboard doctorDashboard = new DoctorDashboard();
+            doctorDashboard.setDoctorInfo(new DoctorResponse().returnResponse(doctor));
+            doctorDashboard.setAppointmentList(appointmentList);
+            return ResponseEntity.ok().body(doctorDashboard);
+        }
+        catch (Exception e){
+            new PrintErrorMessage(e);
+            return ResponseEntity.internalServerError().body("Got Some error while updating password");
+        }
+    }
+
+    // ****************** findAllAppointment Where of a specific patient by doctor  ****************
+    public ResponseEntity<?> getPatientProfileForDoctor(String patientId,String reqHeader){
+        try{
+            String username =  jwtService.extractUsername(reqHeader.substring(7));
+
+            Optional<Doctor> isDoctor = doctorRepository.findByEmail(username);
+
+            if(isDoctor.isEmpty()){
+                return ResponseEntity.badRequest().body("Invalid doctor");
+            }
+            Doctor doctor = isDoctor.get();
+            PatientProfileForDoctor patientProfileForDoctor = new PatientProfileForDoctor();
+            Patient patient = patientRepository.findById(patientId).orElseThrow();
+            List<Appointment> appointmentList = appointmentService.findAppointmetByPatientIdAndDoctor(patientId,doctor.getId());
+            patientProfileForDoctor.setPatientInfo(new PatientResponse().returnResponse(patient));
+            patientProfileForDoctor.setAppointmentList(appointmentList);
+            return ResponseEntity.ok().body(patientProfileForDoctor);
+        }
+        catch (Exception e){
+            new PrintErrorMessage(e);
+            return ResponseEntity.internalServerError().body("Got Some error while updating password");
+        }
+    }
+
+    // ***************** update appointment ************************
+    public ResponseEntity<?> updateAppointment(String id,UpdateAppointmentRequest appointmentRequest){
+        try{
+            return ResponseEntity.ok().body(appointmentService.updateAppointment(id,appointmentRequest));
+        }
+        catch (Exception e){
+            new PrintErrorMessage(e);
+            return ResponseEntity.internalServerError().body("Got Some error while updating password");
+        }
+    }
+
+
 
     // ****************** Authentication methods ***************************
     private void doAuthenticate(String email, String password) {

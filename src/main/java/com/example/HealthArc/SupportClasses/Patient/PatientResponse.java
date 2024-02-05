@@ -15,9 +15,7 @@ public class PatientResponse {
     private String id;
     private String email;
     private String phone;
-
     private String avatar;
-
     private PatientPersonalInfo personalInfo;
     private List<Allergy> allergies;
     private String bloodType;
