@@ -10,12 +10,17 @@ import com.example.HealthArc.Security.SecurityConfig;
 import com.example.HealthArc.Security.UserDetailServiceConfig.DoctorUserDetailService;
 import com.example.HealthArc.Services.Appointment.AppointmentService;
 import com.example.HealthArc.Services.Mail.EmailService;
+import com.example.HealthArc.SupportClasses.Address;
 import com.example.HealthArc.SupportClasses.Appointment.UpdateAppointmentRequest;
 import com.example.HealthArc.SupportClasses.Doctor.*;
 import com.example.HealthArc.SupportClasses.Patient.PatientResponse;
 import com.example.HealthArc.SupportClasses.PrintErrorMessage;
 import com.example.HealthArc.SupportClasses.UserRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.BasicQuery;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +36,12 @@ import java.util.Optional;
 
 @Service
 public class DoctorService {
+    private final MongoTemplate mongoTemplate;
+
+    public DoctorService(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
+
     @Autowired
     private DoctorRepository doctorRepository;
     @Autowired
@@ -350,8 +361,6 @@ public class DoctorService {
             return ResponseEntity.internalServerError().body("Got Some error while updating password");
         }
     }
-
-
 
     // ****************** Authentication methods ***************************
     private void doAuthenticate(String email, String password) {
