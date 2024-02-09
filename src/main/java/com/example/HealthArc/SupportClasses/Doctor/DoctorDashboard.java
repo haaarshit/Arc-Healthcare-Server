@@ -1,6 +1,7 @@
 package com.example.HealthArc.SupportClasses.Doctor;
 
 import com.example.HealthArc.Models.Appointment;
+import com.example.HealthArc.Models.AppointmentRequest;
 import com.example.HealthArc.Models.Doctor;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,4 +17,5 @@ import java.util.List;
 public class DoctorDashboard {
     private DoctorResponse doctorInfo;
     private List<Appointment> appointmentList;
+    private List<AppointmentRequest> appointmentRequestList;
 }

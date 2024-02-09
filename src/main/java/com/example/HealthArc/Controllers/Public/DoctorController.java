@@ -34,6 +34,11 @@ public class DoctorController {
     ResponseEntity<?> getAllDoctor() {
         return doctorService.getAllDoctors();
     }
+    @GetMapping("/city")
+    ResponseEntity<?> getDoctorByCity(@RequestParam("cityname") String city) {
+        return doctorService.getDoctorByCity(city);
+    }
+
 
     // ****************************  get doctor by id   **********************************//
 //    @GetMapping("/{id}")

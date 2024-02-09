@@ -1,8 +1,10 @@
 package com.example.HealthArc.Services.Doctor;
 
 import com.example.HealthArc.Models.Appointment;
+import com.example.HealthArc.Models.AppointmentRequest;
 import com.example.HealthArc.Models.Doctor;
 import com.example.HealthArc.Models.Patient;
+import com.example.HealthArc.Repository.Appointment.AppointmentRequestRepository;
 import com.example.HealthArc.Repository.Doctor.DoctorRepository;
 import com.example.HealthArc.Repository.Patient.PatientRepository;
 import com.example.HealthArc.Security.JwtService;
@@ -46,6 +48,8 @@ public class DoctorService {
     private DoctorRepository doctorRepository;
     @Autowired
     private PatientRepository patientRepository;
+    @Autowired
+    private AppointmentRequestRepository appointmentRequestRepository;
     @Autowired
     private AppointmentService appointmentService;
     @Autowired
@@ -291,12 +295,12 @@ public class DoctorService {
         }
     }
 
-
     // ******************** APPOINTMENT *************************
     // ****************** createAppointment ************************
-    public ResponseEntity<?> createAppointment(Appointment appointment){
+    public ResponseEntity<?> createAppointment(Appointment appointment,String appointmentRequestId){
         try{
             Appointment appointment1 = appointmentService.createAppointment(appointment);
+            appointmentRequestRepository.deleteById(appointmentRequestId);
             return new ResponseEntity<>(appointment1,HttpStatus.CREATED);
         }
         catch (Exception e){
@@ -316,9 +320,12 @@ public class DoctorService {
             }
             Doctor doctor = isDoctor.get();
             List<Appointment> appointmentList = appointmentService.findAppointmentsByDoctor(doctor.getId());
+            List<AppointmentRequest> appointmentRequestList = appointmentRequestRepository.findByDoctorId(doctor.getId()).get();
+
             DoctorDashboard doctorDashboard = new DoctorDashboard();
             doctorDashboard.setDoctorInfo(new DoctorResponse().returnResponse(doctor));
             doctorDashboard.setAppointmentList(appointmentList);
+            doctorDashboard.setAppointmentRequestList(appointmentRequestList);
             return ResponseEntity.ok().body(doctorDashboard);
         }
         catch (Exception e){
@@ -360,6 +367,20 @@ public class DoctorService {
             new PrintErrorMessage(e);
             return ResponseEntity.internalServerError().body("Got Some error while updating password");
         }
+    }
+
+    // ***************** findDoctorByCity ********************
+    public ResponseEntity<?> getDoctorByCity(String city){
+        try {
+            BasicQuery query = new BasicQuery("{ 'address.city' : '" + city + "' }");
+            List<Doctor> doctors = mongoTemplate.find(query, Doctor.class);
+            return ResponseEntity.ok().body(new DoctorListResponse().returnResponse(doctors));
+        }
+        catch (Exception e){
+            new PrintErrorMessage(e);
+            return ResponseEntity.internalServerError().body("Got some problem");
+        }
+
     }
 
     // ****************** Authentication methods ***************************

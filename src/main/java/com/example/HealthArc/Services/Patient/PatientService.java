@@ -1,8 +1,10 @@
 package com.example.HealthArc.Services.Patient;
 
 import com.example.HealthArc.Models.Appointment;
+import com.example.HealthArc.Models.AppointmentRequest;
 import com.example.HealthArc.Models.Doctor;
 import com.example.HealthArc.Models.Patient;
+import com.example.HealthArc.Repository.Appointment.AppointmentRequestRepository;
 import com.example.HealthArc.Repository.Doctor.DoctorRepository;
 import com.example.HealthArc.Repository.Patient.PatientRepository;
 import com.example.HealthArc.Security.JwtService;
@@ -41,6 +43,8 @@ public class PatientService {
     @Autowired
     private PatientRepository patientRepository;
     @Autowired
+    private AppointmentRequestRepository appointmentRequestRepository;
+    @Autowired
     private PatientUserDetailService patientUserDetailService;
 
     @Autowired
@@ -71,10 +75,8 @@ public class PatientService {
 
             UserDetails userDetails = patientUserDetailService.loadUserByUsername(email);
             String token = this.jwtService.generateToken(userDetails);
-
             HttpHeaders header = new HttpHeaders();
             header.set("token",token);
-
             PatientResponse response = new PatientResponse().returnResponse(saved);
             emailService.sendSimpleEmail(response.getEmail(),"Account Successfully created","Your account is created successfully");
             return ResponseEntity.ok().headers(header).body(response);
@@ -249,6 +251,28 @@ public class PatientService {
         catch (Exception e){
             new PrintErrorMessage(e);
             return ResponseEntity.internalServerError().body("Got Some error while updating password");
+        }
+    }
+
+    // **************** Add appointment request ******************************
+    public ResponseEntity<?> addAppointmentRequest(AppointmentRequest appointmentReq, String reqHeader){
+        try{
+            String username =  jwtService.extractUsername(reqHeader.substring(7));
+
+            Optional<Patient> isPatient = patientRepository.findByEmail(username);
+
+            if(isPatient.isEmpty()){
+                return ResponseEntity.badRequest().body("Invalid Patient");
+            }
+            Patient patient = isPatient.get();
+            if(appointmentReq.getDoctorId()== null)  return ResponseEntity.internalServerError().body("Doctor Id should not be null");
+            appointmentReq.setPatientId(patient.getId());
+            appointmentRequestRepository.save(appointmentReq);
+            return new ResponseEntity<>("Request send successfull",HttpStatus.CREATED);
+        }
+        catch (Exception e){
+            new PrintErrorMessage(e);
+            return ResponseEntity.internalServerError().body("Got Some error while creating your request");
         }
     }
 

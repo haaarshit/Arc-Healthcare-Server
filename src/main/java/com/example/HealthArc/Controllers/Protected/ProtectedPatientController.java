@@ -1,5 +1,6 @@
 package com.example.HealthArc.Controllers.Protected;
 
+import com.example.HealthArc.Models.AppointmentRequest;
 import com.example.HealthArc.Services.Doctor.DoctorService;
 import com.example.HealthArc.Services.Patient.PatientService;
 import com.example.HealthArc.SupportClasses.Address;
@@ -40,6 +41,12 @@ public class ProtectedPatientController {
     @PostMapping("/add-review")
     ResponseEntity<?> addDoctorReview(@RequestBody Review review, @RequestParam String id){
         return doctorService.addReview(review,id); // add review to doctor
+    }
+
+    // *********************** Add Appointment request *******************//
+    @PostMapping("/add-appointmentRequest")
+    ResponseEntity<?> addAppointmentRequest(@RequestBody AppointmentRequest appointmentRequest,@RequestHeader("Authorization") String header){
+        return patientService.addAppointmentRequest(appointmentRequest,header); // add review to doctor
     }
 
     // ************************ Get Dashboard *******************************//
