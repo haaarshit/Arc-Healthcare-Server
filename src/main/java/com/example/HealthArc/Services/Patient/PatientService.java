@@ -11,6 +11,7 @@ import com.example.HealthArc.Security.JwtService;
 import com.example.HealthArc.Security.SecurityConfig;
 import com.example.HealthArc.Security.UserDetailServiceConfig.PatientUserDetailService;
 import com.example.HealthArc.Services.Appointment.AppointmentService;
+import com.example.HealthArc.Services.Cloudinary.CloudinaryService;
 import com.example.HealthArc.Services.Mail.EmailService;
 import com.example.HealthArc.SupportClasses.Address;
 import com.example.HealthArc.SupportClasses.Doctor.DoctorResponse;
@@ -53,6 +54,9 @@ public class PatientService {
     private JwtService jwtService;
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    CloudinaryService cloudinaryService;
     @Autowired
     private SecurityConfig securityConfig;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -66,8 +70,7 @@ public class PatientService {
                 return ResponseEntity.badRequest().body("User Already Exist");
             }
             String avatar = patient.getAvatar();
-            // todo => upload to cloudinary
-            String avatarUrl = "";// cloudinary url
+            String avatarUrl = (String) cloudinaryService.upload(avatar).get("url");// cloudinary url;// cloudinary url
             String hashedPassword = passwordEncoder.encode(patient.getPassword());
             patient.setPassword(hashedPassword);
             patient.setAvatar(avatarUrl);
@@ -175,8 +178,7 @@ public class PatientService {
             Patient patient = isPatient.get();
 
 
-            // todo => upload to cloudinary
-            String avatarUrl = "avatar"; // base64 url
+            String avatarUrl =(String) cloudinaryService.upload(base64).get("url"); // base64 url
             patient.setAvatar(avatarUrl);
             Patient response = patientRepository.save(patient);
             return ResponseEntity.ok().body(new PatientResponse().returnResponse(response));

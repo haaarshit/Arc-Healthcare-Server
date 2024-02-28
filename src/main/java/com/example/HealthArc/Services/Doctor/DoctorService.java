@@ -11,8 +11,9 @@ import com.example.HealthArc.Security.JwtService;
 import com.example.HealthArc.Security.SecurityConfig;
 import com.example.HealthArc.Security.UserDetailServiceConfig.DoctorUserDetailService;
 import com.example.HealthArc.Services.Appointment.AppointmentService;
+import com.example.HealthArc.Services.Cloudinary.CloudinaryConfig;
+import com.example.HealthArc.Services.Cloudinary.CloudinaryService;
 import com.example.HealthArc.Services.Mail.EmailService;
-import com.example.HealthArc.SupportClasses.Address;
 import com.example.HealthArc.SupportClasses.Appointment.UpdateAppointmentRequest;
 import com.example.HealthArc.SupportClasses.Doctor.*;
 import com.example.HealthArc.SupportClasses.Patient.PatientResponse;
@@ -21,8 +22,6 @@ import com.example.HealthArc.SupportClasses.UserRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.BasicQuery;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +54,8 @@ public class DoctorService {
     @Autowired
     EmailService emailService;
     @Autowired
+    CloudinaryService cloudinaryService;
+    @Autowired
     private DoctorUserDetailService doctorUserDetailService;
     @Autowired
     private JwtService jwtService;
@@ -72,8 +73,8 @@ public class DoctorService {
             }
 
             String avatar = doctor.getAvatar();
-            // todo => upload to cloudinary
-            String avatarUrl = "";// cloudinary url
+
+            String avatarUrl =(String) cloudinaryService.upload(avatar).get("url");// cloudinary url
             String hashedPassword = passwordEncoder.encode(doctor.getPassword());
             doctor.setPassword(hashedPassword);
             doctor.setAvatar(avatarUrl);
@@ -219,11 +220,9 @@ public class DoctorService {
             }
             Doctor doctor = isDoctor.get();
 
-            // todo => upload to cloudinary
-            String avatarUrl = "avatar"; // base64 url
+            String avatarUrl =(String) cloudinaryService.upload(base64).get("url");// cloudinary url
             doctor.setAvatar(avatarUrl);
             Doctor response = doctorRepository.save(doctor);
-
             return ResponseEntity.ok().body(new DoctorResponse().returnResponse(response));
         }
         catch (Exception e){
