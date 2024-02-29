@@ -7,6 +7,7 @@ import com.example.HealthArc.SupportClasses.Appointment.UpdateAppointmentRequest
 import com.example.HealthArc.SupportClasses.Doctor.Availability;
 import com.example.HealthArc.SupportClasses.Doctor.ProfessionalInfo;
 import com.example.HealthArc.SupportClasses.Patient.UpdatePassword;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,6 @@ public class ProtectedDoctorController {
     JwtService service;
     @Autowired
     DoctorService doctorService;
-
     /*
     Secured routes
     Only authenticated user with Authorization token can access these routes
@@ -28,8 +28,8 @@ public class ProtectedDoctorController {
     // ****************************  update doctor data ********************************//
 
     @PutMapping("/update-password")
-    ResponseEntity<?> updateDoctorPassword(@RequestBody UpdatePassword password, @RequestHeader("Authorization") String header){
-        return doctorService.updatePassword(password.getOldPassword(),password.getPassword(),header);
+    ResponseEntity<?> updateDoctorPassword(@RequestBody UpdatePassword password, @RequestHeader("Authorization") String header, HttpServletResponse response){
+        return doctorService.updatePassword(password.getOldPassword(),password.getPassword(),header,response);
     }
 
     @PutMapping("/update-avatar")

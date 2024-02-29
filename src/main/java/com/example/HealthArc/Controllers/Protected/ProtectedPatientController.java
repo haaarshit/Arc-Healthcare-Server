@@ -8,6 +8,7 @@ import com.example.HealthArc.SupportClasses.Doctor.Availability;
 import com.example.HealthArc.SupportClasses.Doctor.ProfessionalInfo;
 import com.example.HealthArc.SupportClasses.Doctor.Review;
 import com.example.HealthArc.SupportClasses.Patient.UpdatePassword;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +24,8 @@ public class ProtectedPatientController {
 
     // update patient data
     @PutMapping("/update-password")
-    ResponseEntity<?> updatePatientPassword(@RequestBody UpdatePassword password, @RequestHeader("Authorization") String header){
-        return patientService.updatePassword(password.getOldPassword(),password.getPassword(),header);
+    ResponseEntity<?> updatePatientPassword(@RequestBody UpdatePassword password, @RequestHeader("Authorization") String header, HttpServletResponse response){
+        return patientService.updatePassword(password.getOldPassword(),password.getPassword(),header,response);
     }
 
     @PutMapping("/update-avatar")

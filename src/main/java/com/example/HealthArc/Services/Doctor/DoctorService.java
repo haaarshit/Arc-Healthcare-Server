@@ -19,6 +19,8 @@ import com.example.HealthArc.SupportClasses.Doctor.*;
 import com.example.HealthArc.SupportClasses.Patient.PatientResponse;
 import com.example.HealthArc.SupportClasses.PrintErrorMessage;
 import com.example.HealthArc.SupportClasses.UserRequest;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.BasicQuery;
@@ -64,7 +66,7 @@ public class DoctorService {
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     // ************************ Signup ***************************
-    public ResponseEntity<?>  addDoctor(Doctor doctor){
+    public ResponseEntity<?>  addDoctor(Doctor doctor, HttpServletResponse servletResponse ){
         String email = doctor.getEmail();
         try {
             Optional<Doctor> isAlreadyExist = doctorRepository.findByEmail(email);
@@ -83,12 +85,16 @@ public class DoctorService {
             UserDetails userDetails = doctorUserDetailService.loadUserByUsername(email);
             String token = this.jwtService.generateToken(userDetails);
 
-            HttpHeaders header = new HttpHeaders();
-            header.set("token",token);
+            // cookie
+            Cookie cookie = new Cookie("token",token);
+            cookie.setMaxAge(7 * 24 * 60 * 60);
+            cookie.setSecure(true);
+            cookie.setHttpOnly(true);
+            servletResponse.addCookie(cookie);
 
             DoctorResponse response = new DoctorResponse().returnResponse(saved);
             emailService.sendSimpleEmail(response.getEmail(),"Account Successfully created","Your account is created successfully");
-            return ResponseEntity.ok().headers(header).body(response);
+            return ResponseEntity.ok().body(response);
         }
         catch (Exception e){
             new PrintErrorMessage(e);
@@ -97,16 +103,19 @@ public class DoctorService {
     }
 
     // ********************** Login ****************************
-    public ResponseEntity<?> loginDoctor(UserRequest request){
+    public ResponseEntity<?> loginDoctor(UserRequest request,HttpServletResponse servletResponse){
         String email = request.getEmail();
         String password = request.getPassword();
         this.doAuthenticate(email,password);
         UserDetails userDetails = doctorUserDetailService.loadUserByUsername(email);
         String token = this.jwtService.generateToken(userDetails);
-        HttpHeaders header = new HttpHeaders();
-        header.set("token",token);
-        System.out.println("token "+token);
-        // todo => add token in cookie
+
+        // cookie
+        Cookie cookie = new Cookie("token",token);
+        cookie.setMaxAge(7 * 24 * 60 * 60);
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        servletResponse.addCookie(cookie);
         try{
             Optional<Doctor> isDoctor = doctorRepository.findByEmail(email);
             if(isDoctor.isEmpty()){
@@ -114,7 +123,7 @@ public class DoctorService {
             }
             Doctor doctor = isDoctor.get();
             DoctorResponse response = new DoctorResponse().returnResponse(doctor);
-            return ResponseEntity.ok().headers(header).body(response);
+            return ResponseEntity.ok().body(response);
         }
         catch(Exception e){
             new PrintErrorMessage(e);
@@ -174,7 +183,7 @@ public class DoctorService {
     }
 
     // ****************** Update Password *************************
-    public ResponseEntity<?> updatePassword(String oldPassword,String password, String reqHeader){
+    public ResponseEntity<?> updatePassword(String oldPassword,String password, String reqHeader,HttpServletResponse servletResponse){
         try{
             String username =  jwtService.extractUsername(reqHeader.substring(7));
 
@@ -194,13 +203,16 @@ public class DoctorService {
             UserDetails userDetails = doctorUserDetailService.loadUserByUsername(response.getEmail());
             String token = this.jwtService.generateToken(userDetails);
 
-            // todo => send token in cookie
-            HttpHeaders header = new HttpHeaders();
-            header.set("token",token);
+            // cookie
+            Cookie cookie = new Cookie("token",token);
+            cookie.setMaxAge(7 * 24 * 60 * 60);
+            cookie.setSecure(true);
+            cookie.setHttpOnly(true);
+            servletResponse.addCookie(cookie);
 
             emailService.sendSimpleEmail(response.getEmail(),"Password Updated","Your password is successfully updated");
 
-            return ResponseEntity.ok().headers(header).body(new DoctorResponse().returnResponse(response));
+            return ResponseEntity.ok().body(new DoctorResponse().returnResponse(response));
         }
         catch (Exception e){
             new PrintErrorMessage(e);

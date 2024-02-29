@@ -19,14 +19,14 @@ public class DoctorController {
 
     // *************************** doctor signup *******************************//
     @PostMapping("/add")
-    ResponseEntity<?> addDoctor(@RequestBody Doctor doctor){
-        return doctorService.addDoctor(doctor);
+    ResponseEntity<?> addDoctor(@RequestBody Doctor doctor,HttpServletResponse response){
+        return doctorService.addDoctor(doctor,response);
     }
 
     //**************************** Doctor login ********************************//
     @PostMapping("/login")
-    ResponseEntity<?> loginDoctor(@RequestBody UserRequest userRequest) {
-        return doctorService.loginDoctor(userRequest);
+    ResponseEntity<?> loginDoctor(@RequestBody UserRequest userRequest,HttpServletResponse response) {
+        return doctorService.loginDoctor(userRequest,response);
     }
 
     // ****************************  get all doctors    ***********************************//
