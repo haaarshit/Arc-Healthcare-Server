@@ -24,6 +24,7 @@ public class DoctorListResponse {
     private String avatar;
     private Address address;
     private  ProfessionalInfo professionalInfo;
+    private  DoctorPersonalInfo  personalInfo;
     private  int totalRating;
     private  int peopleRated;
     private Date createdAt;
@@ -38,6 +39,7 @@ public class DoctorListResponse {
                     .avatar(doctor.getAvatar())
                     .address(doctor.getAddress())
                     .professionalInfo(doctor.getProfessionalInfo())
+                    .personalInfo(doctor.getPersonalInfo())
                     .totalRating(doctor.getTotalRating())
                     .peopleRated(doctor.getPeopleRated())
                     .createdAt(doctor.getCreatedAt()).build());

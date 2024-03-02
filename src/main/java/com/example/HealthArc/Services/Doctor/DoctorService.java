@@ -86,15 +86,19 @@ public class DoctorService {
             String token = this.jwtService.generateToken(userDetails);
 
             // cookie
-            Cookie cookie = new Cookie("token",token);
-            cookie.setMaxAge(7 * 24 * 60 * 60);
-            cookie.setSecure(true);
-            cookie.setHttpOnly(true);
-            servletResponse.addCookie(cookie);
+//            Cookie cookie = new Cookie("token",token);
+//            cookie.setMaxAge(7 * 24 * 60 * 60);
+//            cookie.setSecure(false);
+//            cookie.setPath("/");
+//            cookie.setHttpOnly(false);
+//            servletResponse.addCookie(cookie);
+            // header
+            HttpHeaders header = new HttpHeaders();
+            header.set("token",token);
 
             DoctorResponse response = new DoctorResponse().returnResponse(saved);
             emailService.sendSimpleEmail(response.getEmail(),"Account Successfully created","Your account is created successfully");
-            return ResponseEntity.ok().body(response);
+            return ResponseEntity.ok().headers(header).body(response);
         }
         catch (Exception e){
             new PrintErrorMessage(e);
@@ -111,11 +115,15 @@ public class DoctorService {
         String token = this.jwtService.generateToken(userDetails);
 
         // cookie
-        Cookie cookie = new Cookie("token",token);
-        cookie.setMaxAge(7 * 24 * 60 * 60);
-        cookie.setSecure(true);
-        cookie.setHttpOnly(true);
-        servletResponse.addCookie(cookie);
+//        Cookie cookie = new Cookie("token",token);
+//        cookie.setMaxAge(7 * 24 * 60 * 60);
+//        cookie.setSecure(true);
+//        cookie.setHttpOnly(true);
+//        servletResponse.addCookie(cookie);
+
+        HttpHeaders header = new HttpHeaders();
+        header.set("token",token);
+
         try{
             Optional<Doctor> isDoctor = doctorRepository.findByEmail(email);
             if(isDoctor.isEmpty()){
@@ -123,7 +131,7 @@ public class DoctorService {
             }
             Doctor doctor = isDoctor.get();
             DoctorResponse response = new DoctorResponse().returnResponse(doctor);
-            return ResponseEntity.ok().body(response);
+            return ResponseEntity.ok().headers(header).body(response);
         }
         catch(Exception e){
             new PrintErrorMessage(e);
@@ -204,15 +212,17 @@ public class DoctorService {
             String token = this.jwtService.generateToken(userDetails);
 
             // cookie
-            Cookie cookie = new Cookie("token",token);
-            cookie.setMaxAge(7 * 24 * 60 * 60);
-            cookie.setSecure(true);
-            cookie.setHttpOnly(true);
-            servletResponse.addCookie(cookie);
+//            Cookie cookie = new Cookie("token",token);
+//            cookie.setMaxAge(7 * 24 * 60 * 60);
+//            cookie.setSecure(true);
+//            cookie.setHttpOnly(true);
+//            servletResponse.addCookie(cookie);
+            HttpHeaders header = new HttpHeaders();
+            header.set("token",token);
 
             emailService.sendSimpleEmail(response.getEmail(),"Password Updated","Your password is successfully updated");
 
-            return ResponseEntity.ok().body(new DoctorResponse().returnResponse(response));
+            return ResponseEntity.ok().headers(header).body(new DoctorResponse().returnResponse(response));
         }
         catch (Exception e){
             new PrintErrorMessage(e);
