@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/auth/doctor")
+@CrossOrigin(origins = "http://localhost:3000")
 public class ProtectedDoctorController {
     @Autowired
     JwtService service;
@@ -23,7 +24,6 @@ public class ProtectedDoctorController {
     Secured routes
     Only authenticated user with Authorization token can access these routes
     */
-
 
     // ****************************  update doctor data ********************************//
 

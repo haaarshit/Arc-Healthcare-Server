@@ -17,4 +17,5 @@ public class AppointmentRequest {
     String id;
     String doctorId;
     String patientId;
+
 }

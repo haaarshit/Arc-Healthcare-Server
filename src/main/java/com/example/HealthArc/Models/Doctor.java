@@ -37,6 +37,7 @@ public class Doctor implements UserDetails, CredentialsContainer {
     private String avatar;
     private DoctorPersonalInfo personalInfo;
     private Address address;
+    private String clinicName;
     private ProfessionalInfo professionalInfo;
     private Availability availability;
     private int consultationFees;

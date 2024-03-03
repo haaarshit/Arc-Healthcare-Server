@@ -24,6 +24,7 @@ public class DoctorResponse {
     private  String avatar;
     private  DoctorPersonalInfo personalInfo;
     private  Address address;
+    private String  clinicName;
     private  ProfessionalInfo professionalInfo;
     private  Availability availability;
     private  int consultationFees;
@@ -45,6 +46,7 @@ public class DoctorResponse {
                 .consultationFees(doctor.getConsultationFees())
                 .languages(doctor.getLanguages())
                 .reviews(doctor.getReviews())
+                .clinicName(doctor.getClinicName())
                 .totalRating(doctor.getTotalRating())
                 .peopleRated(doctor.getPeopleRated())
                 .createdAt(doctor.getCreatedAt())

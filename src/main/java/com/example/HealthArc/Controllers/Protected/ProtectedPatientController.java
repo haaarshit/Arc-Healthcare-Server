@@ -61,4 +61,5 @@ public class ProtectedPatientController {
     ResponseEntity<?> getDoctorProfileForPatient(@PathVariable("id") String dcotorId,@RequestHeader("Authorization") String header){
         return patientService.getDoctorProfileForPatient(dcotorId,header);
     }
+
 }

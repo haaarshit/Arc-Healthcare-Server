@@ -19,3 +19,4 @@ public class DoctorDashboard {
     private List<Appointment> appointmentList;
     private List<AppointmentRequest> appointmentRequestList;
 }
+

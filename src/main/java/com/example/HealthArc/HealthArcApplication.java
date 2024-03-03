@@ -17,7 +17,7 @@ public class HealthArcApplication {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**").allowedHeaders("*").exposedHeaders("*").allowedOrigins("http://localhost:3000");
+				registry.addMapping("/**").allowedHeaders("*").exposedHeaders("*").allowedOrigins("http://localhost:3000").allowCredentials(true);
 			}
 		};
 	}
