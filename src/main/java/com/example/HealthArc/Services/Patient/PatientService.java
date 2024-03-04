@@ -81,16 +81,18 @@ public class PatientService {
             UserDetails userDetails = patientUserDetailService.loadUserByUsername(email);
             String token = this.jwtService.generateToken(userDetails);
             // cookie
-            Cookie cookie = new Cookie("token",token);
-            cookie.setMaxAge(7 * 24 * 60 * 60);
-            cookie.setSecure(true);
-            cookie.setHttpOnly(true);
-            servletResponse.addCookie(cookie);
+//            Cookie cookie = new Cookie("token",token);
+//            cookie.setMaxAge(7 * 24 * 60 * 60);
+//            cookie.setSecure(true);
+//            cookie.setHttpOnly(true);
+//            servletResponse.addCookie(cookie);
+            HttpHeaders header = new HttpHeaders();
+            header.set("token",token);
 
 
             PatientResponse response = new PatientResponse().returnResponse(saved);
             emailService.sendSimpleEmail(response.getEmail(),"Account Successfully created","Your account is created successfully");
-            return ResponseEntity.ok().body(response);
+            return ResponseEntity.ok().headers(header).body(response);
         }
         catch (Exception e){
             new PrintErrorMessage(e);
@@ -107,11 +109,13 @@ public class PatientService {
         UserDetails userDetails = patientUserDetailService.loadUserByUsername(email);
         String token = this.jwtService.generateToken(userDetails);
         // cookie
-        Cookie cookie = new Cookie("token",token);
-        cookie.setMaxAge(7 * 24 * 60 * 60);
-        cookie.setSecure(true);
-        cookie.setHttpOnly(true);
-        servletResponse.addCookie(cookie);
+//        Cookie cookie = new Cookie("token",token);
+//        cookie.setMaxAge(7 * 24 * 60 * 60);
+//        cookie.setSecure(true);
+//        cookie.setHttpOnly(true);
+//        servletResponse.addCookie(cookie);
+        HttpHeaders header = new HttpHeaders();
+        header.set("token",token);
 
         try{
             Optional<Patient> isPatient = patientRepository.findByEmail(email);
@@ -120,7 +124,7 @@ public class PatientService {
             }
             Patient patient = isPatient.get();
             PatientResponse response = new PatientResponse().returnResponse(patient);
-            return ResponseEntity.ok().body(response);
+            return ResponseEntity.ok().headers(header).body(response);
         }
         catch(Exception e){
             new PrintErrorMessage(e);
@@ -166,15 +170,17 @@ public class PatientService {
             String token = this.jwtService.generateToken(userDetails);
 
             // cookie
-            Cookie cookie = new Cookie("token",token);
-            cookie.setMaxAge(7 * 24 * 60 * 60);
-            cookie.setSecure(true);
-            cookie.setHttpOnly(true);
-            servletResponse.addCookie(cookie);
+//            Cookie cookie = new Cookie("token",token);
+//            cookie.setMaxAge(7 * 24 * 60 * 60);
+//            cookie.setSecure(true);
+//            cookie.setHttpOnly(true);
+//            servletResponse.addCookie(cookie);
+            HttpHeaders header = new HttpHeaders();
+            header.set("token",token);
 
 
             emailService.sendSimpleEmail(response.getEmail(),"Password Updated","Your password is successfully updated");
-            return ResponseEntity.ok().body(new PatientResponse().returnResponse(response));
+            return ResponseEntity.ok().headers(header).body(new PatientResponse().returnResponse(response));
         }
         catch (Exception e){
             new PrintErrorMessage(e);

@@ -68,7 +68,7 @@ public class ProtectedDoctorController {
 
     // doctor can update the appointment properties
     @PutMapping("/appointment/update/{id}")
-    ResponseEntity<?> updateAppointment(@PathVariable("id") String id, @RequestBody UpdateAppointmentRequest updateAppoinrmentRequest){
-        return doctorService.updateAppointment(id,updateAppoinrmentRequest);
+    ResponseEntity<?> updateAppointment(@PathVariable("id") String id, @RequestBody UpdateAppointmentRequest updateAppointmentRequest){
+        return doctorService.updateAppointment(id,updateAppointmentRequest);
     }
 }
