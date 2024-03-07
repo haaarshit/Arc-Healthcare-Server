@@ -33,7 +33,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authz)-> authz
                         .requestMatchers("/api/auth/**").authenticated()
 //                        .requestMatchers("/api/auth/doctor/**").hasAuthority("DOCTOR")
