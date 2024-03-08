@@ -4,6 +4,7 @@ import com.example.HealthArc.Models.Appointment;
 import com.example.HealthArc.Repository.Appointment.AppointmentRepository;
 import com.example.HealthArc.SupportClasses.Appointment.UpdateAppointmentRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

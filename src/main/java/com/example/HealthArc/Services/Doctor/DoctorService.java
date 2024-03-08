@@ -318,8 +318,11 @@ public class DoctorService {
 
     // ******************** APPOINTMENT *************************
     // ****************** createAppointment ************************
-    public ResponseEntity<?> createAppointment(Appointment appointment,String appointmentRequestId){
+    public ResponseEntity<?> createAppointment(Appointment appointment,String appointmentRequestId,String reqHeader){
         try{
+            String email =  jwtService.extractUsername(reqHeader.substring(7));
+            Doctor doctor = doctorRepository.findByEmail(email).orElseThrow();
+            if(!doctor.getId().equals(appointment.getDoctorId())) throw new Exception("Invalid doctor id");
             Appointment appointment1 = appointmentService.createAppointment(appointment);
             appointmentRequestRepository.deleteById(appointmentRequestId);
             return new ResponseEntity<>(appointment1,HttpStatus.CREATED);

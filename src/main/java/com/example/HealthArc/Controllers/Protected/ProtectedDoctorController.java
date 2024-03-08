@@ -50,8 +50,8 @@ public class ProtectedDoctorController {
     // ******************** handle appointment
     // create appointment
     @PostMapping("/create-appointment")
-    ResponseEntity<?> createAppointment(@RequestBody Appointment appointment,@RequestParam("id") String appointReqId){
-        return doctorService.createAppointment(appointment,appointReqId);
+    ResponseEntity<?> createAppointment(@RequestBody Appointment appointment,@RequestParam("id") String appointReqId,@RequestHeader("Authorization") String header){
+        return doctorService.createAppointment(appointment,appointReqId,header);
     }
 
     // get doctor dashboard

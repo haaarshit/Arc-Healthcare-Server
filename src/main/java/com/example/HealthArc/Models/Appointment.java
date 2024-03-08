@@ -27,6 +27,8 @@ public class Appointment {
     private String id;
     private String patientId;
     private String doctorId;
+    private String patientName;
+    private String patientEmail;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date appointmentDate;
     private String startTime;
