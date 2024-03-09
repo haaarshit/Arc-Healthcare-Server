@@ -322,7 +322,11 @@ public class DoctorService {
         try{
             String email =  jwtService.extractUsername(reqHeader.substring(7));
             Doctor doctor = doctorRepository.findByEmail(email).orElseThrow();
+            Patient patient = patientRepository.findById(appointmentRequestRepository.findById(appointmentRequestId).orElseThrow().getPatientId()).orElseThrow();
             if(!doctor.getId().equals(appointment.getDoctorId())) throw new Exception("Invalid doctor id");
+            appointment.setPatientName(patient.getPersonalInfo().getFirstName() +" " + patient.getPersonalInfo().getLastName());
+            appointment.setPatientEmail(patient.getEmail());
+            appointment.setStatus("pending");
             Appointment appointment1 = appointmentService.createAppointment(appointment);
             appointmentRequestRepository.deleteById(appointmentRequestId);
             return new ResponseEntity<>(appointment1,HttpStatus.CREATED);
