@@ -1,6 +1,7 @@
 package com.example.HealthArc.Controllers.Public;
 
 import com.example.HealthArc.Models.Patient;
+import com.example.HealthArc.Services.Doctor.DoctorService;
 import com.example.HealthArc.Services.Patient.PatientService;
 import com.example.HealthArc.SupportClasses.UserRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,5 +25,5 @@ public class PatientController {
         return patientService.loginPatient(request,response);
     }
     // get patient by id
-    // update patient data
+
 }

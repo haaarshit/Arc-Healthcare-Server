@@ -37,7 +37,6 @@ public class ProtectedPatientController {
         return patientService.updateAddress(address,header);
     }
 
-
     // ************************ Add Review *******************************//
     @PostMapping("/add-review")
     ResponseEntity<?> addDoctorReview(@RequestBody Review review, @RequestParam String id){

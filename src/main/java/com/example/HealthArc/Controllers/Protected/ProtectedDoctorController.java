@@ -71,4 +71,10 @@ public class ProtectedDoctorController {
     ResponseEntity<?> updateAppointment(@PathVariable("id") String id, @RequestBody UpdateAppointmentRequest updateAppointmentRequest){
         return doctorService.updateAppointment(id,updateAppointmentRequest);
     }
+
+    // filter doctor by city
+    @GetMapping("/city")
+    ResponseEntity<?> getDoctorByCity(@RequestParam("cityname") String city) {
+        return doctorService.getDoctorByCity(city);
+    }
 }
