@@ -6,7 +6,9 @@ import com.example.HealthArc.Services.Doctor.DoctorService;
 import com.example.HealthArc.SupportClasses.Appointment.UpdateAppointmentRequest;
 import com.example.HealthArc.SupportClasses.Doctor.Availability;
 import com.example.HealthArc.SupportClasses.Doctor.ProfessionalInfo;
+import com.example.HealthArc.SupportClasses.Doctor.Qualification;
 import com.example.HealthArc.SupportClasses.Patient.UpdatePassword;
+import com.example.HealthArc.SupportClasses.WorkExperience;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -37,9 +39,13 @@ public class ProtectedDoctorController {
         return doctorService.updateAvatar(avatarBase64,header);
     }
 
-    @PutMapping("/update-professionalInfo")
-    ResponseEntity<?> updateProfessionalInfo(@RequestBody ProfessionalInfo professionalInfo, @RequestHeader("Authorization") String header){
-        return doctorService.updateProfessionalInfo(professionalInfo,header);
+    @PutMapping("/add-qualification")
+    ResponseEntity<?> addQualification(@RequestBody Qualification qualification, @RequestHeader("Authorization") String header){
+        return doctorService.addQualification(qualification,header);
+    }
+   @PutMapping("/add-workExperience")
+    ResponseEntity<?> addWorkExperience(@RequestBody WorkExperience workExperience, @RequestHeader("Authorization") String header){
+        return doctorService.addWorkExperiece(workExperience,header);
     }
 
     @PutMapping("/update-avaibility")
@@ -52,6 +58,10 @@ public class ProtectedDoctorController {
     @PostMapping("/create-appointment")
     ResponseEntity<?> createAppointment(@RequestBody Appointment appointment,@RequestParam("id") String appointReqId,@RequestHeader("Authorization") String header){
         return doctorService.createAppointment(appointment,appointReqId,header);
+    }
+    @DeleteMapping("/reject-appointment")
+    ResponseEntity<?> rejectAppointment(@RequestParam("id") String appointReqId,@RequestHeader("Authorization") String header){
+        return doctorService.rejectAppointment(appointReqId,header);
     }
 
     // get doctor dashboard

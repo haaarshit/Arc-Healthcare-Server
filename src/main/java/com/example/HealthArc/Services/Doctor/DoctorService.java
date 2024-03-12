@@ -19,6 +19,7 @@ import com.example.HealthArc.SupportClasses.Doctor.*;
 import com.example.HealthArc.SupportClasses.Patient.PatientResponse;
 import com.example.HealthArc.SupportClasses.PrintErrorMessage;
 import com.example.HealthArc.SupportClasses.UserRequest;
+import com.example.HealthArc.SupportClasses.WorkExperience;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.xml.crypto.Data;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,8 +69,9 @@ public class DoctorService {
 
     // ************************ Signup ***************************
     public ResponseEntity<?>  addDoctor(Doctor doctor, HttpServletResponse servletResponse ){
-        String email = doctor.getEmail();
         try {
+
+            String email = doctor.getEmail();
             Optional<Doctor> isAlreadyExist = doctorRepository.findByEmail(email);
             if (isAlreadyExist.isPresent() || patientRepository.findByEmail(email).isPresent()) {
                 return ResponseEntity.badRequest().body("User Already Exist");
@@ -80,25 +83,13 @@ public class DoctorService {
             String hashedPassword = passwordEncoder.encode(doctor.getPassword());
             doctor.setPassword(hashedPassword);
             doctor.setAvatar(avatarUrl);
+            doctor.getAddress().setCity(doctor.getAddress().getCity().toLowerCase());
             Doctor saved = doctorRepository.save(doctor);
 
-            UserDetails userDetails = doctorUserDetailService.loadUserByUsername(email);
-            String token = this.jwtService.generateToken(userDetails);
-
-            // cookie
-//            Cookie cookie = new Cookie("token",token);
-//            cookie.setMaxAge(7 * 24 * 60 * 60);
-//            cookie.setSecure(false);
-//            cookie.setPath("/");
-//            cookie.setHttpOnly(false);
-//            servletResponse.addCookie(cookie);
-            // header
-            HttpHeaders header = new HttpHeaders();
-            header.set("token",token);
 
             DoctorResponse response = new DoctorResponse().returnResponse(saved);
-            emailService.sendSimpleEmail(response.getEmail(),"Account Successfully created","Your account is created successfully");
-            return ResponseEntity.ok().headers(header).body(response);
+            emailService.sendSimpleEmail(response.getEmail(),"Account Successfully created","Your account is created successfully! Welcome to Health Arc");
+            return ResponseEntity.ok().body(response);
         }
         catch (Exception e){
             new PrintErrorMessage(e);
@@ -253,8 +244,10 @@ public class DoctorService {
         }
     }
 
-    // ****************** Update Professional info (add) *************************
-    public ResponseEntity<?> updateProfessionalInfo(ProfessionalInfo professionalInfo, String reqHeader){
+    // ****************** Update Qualifications (add) *************************
+
+    // add qualification
+    public ResponseEntity<?>  addQualification(Qualification qualification, String reqHeader){
         try{
             String username =  jwtService.extractUsername(reqHeader.substring(7));
 
@@ -265,19 +258,57 @@ public class DoctorService {
             }
             Doctor doctor = isDoctor.get();
 
-            Optional.ofNullable(professionalInfo.getQualifications()).ifPresent(doctor.getProfessionalInfo().getQualifications()::addAll);
-            Optional.ofNullable(professionalInfo.getWorkExperience()).ifPresent(doctor.getProfessionalInfo().getWorkExperience()::addAll);
-            Optional.ofNullable(professionalInfo.getSpecializations()).ifPresent(doctor.getProfessionalInfo().getSpecializations()::addAll);
+            Optional.ofNullable(qualification).ifPresent(doctor.getProfessionalInfo().getQualifications()::add);
 
-//            if(professionalInfo.getQualifications()!=null){
-//                doctor.getProfessionalInfo().getQualifications().addAll(professionalInfo.getQualifications());
-//            }
-//            if(professionalInfo.getWorkExperience()!=null){
-//                doctor.getProfessionalInfo().getWorkExperience().addAll(professionalInfo.getWorkExperience());
-//            }
-//            if(professionalInfo.getSpecializations()!=null){
-//                doctor.getProfessionalInfo().getSpecializations().addAll(professionalInfo.getSpecializations());
-//            }
+            Doctor response = doctorRepository.save(doctor);
+            return ResponseEntity.ok().body(new DoctorResponse().returnResponse(response));
+
+        }
+        catch (Exception e){
+            new PrintErrorMessage(e);
+            return ResponseEntity.internalServerError().body("Got Some error while updating professional info");
+        }
+    }
+
+
+    // remove qualification
+    public ResponseEntity<?>  removeQualification(Qualification qualification, String reqHeader){
+        try{
+            String username =  jwtService.extractUsername(reqHeader.substring(7));
+
+            Optional<Doctor> isDoctor = doctorRepository.findByEmail(username);
+
+            if(isDoctor.isEmpty()){
+                return ResponseEntity.badRequest().body("Invalid doctor");
+            }
+            Doctor doctor = isDoctor.get();
+
+            Optional.ofNullable(qualification).ifPresent(doctor.getProfessionalInfo().getQualifications()::remove);
+
+            Doctor response = doctorRepository.save(doctor);
+            return ResponseEntity.ok().body(new DoctorResponse().returnResponse(response));
+        }
+        catch (Exception e){
+            new PrintErrorMessage(e);
+            return ResponseEntity.internalServerError().body("Got Some error while updating professional info");
+        }
+    }
+
+
+
+    // add work experience
+    public ResponseEntity<?>  addWorkExperiece(WorkExperience workExperience, String reqHeader){
+        try{
+            String username =  jwtService.extractUsername(reqHeader.substring(7));
+
+            Optional<Doctor> isDoctor = doctorRepository.findByEmail(username);
+
+            if(isDoctor.isEmpty()){
+                return ResponseEntity.badRequest().body("Invalid doctor");
+            }
+            Doctor doctor = isDoctor.get();
+
+            Optional.ofNullable(workExperience).ifPresent(doctor.getProfessionalInfo().getWorkExperience()::add);
 
             Doctor response = doctorRepository.save(doctor);
             return ResponseEntity.ok().body(new DoctorResponse().returnResponse(response));
@@ -336,6 +367,28 @@ public class DoctorService {
             return ResponseEntity.internalServerError().body("Got Some error while updating password");
         }
         
+    }
+    public ResponseEntity<?> rejectAppointment(String appointmentRequestId,String reqHeader){
+        try{
+            String email =  jwtService.extractUsername(reqHeader.substring(7));
+            Doctor doctor = doctorRepository.findByEmail(email).orElseThrow();
+            AppointmentRequest appointmentRequest = appointmentRequestRepository.findById(appointmentRequestId).orElseThrow();
+            if(!appointmentRequest.getDoctorId().equals(doctor.getId())){
+                throw new Error("Can't delete other's requets");
+            }
+            Patient patient = patientRepository.findById(appointmentRequestRepository.findById(appointmentRequestId).orElseThrow().getPatientId()).orElseThrow();
+            String drName= doctor.getPersonalInfo().getFirstName() +" "+ doctor.getPersonalInfo().getLastName();
+            String appointDate = appointmentRequest.getCreatedAt().toString();
+            String message = String.format("Your request for Appointment from Doctor %s on date %s is declined !! We're sorry for inconvenience 🥲",drName,appointDate);
+            emailService.sendSimpleEmail(patient.getEmail(),"Appointment Rejection",message);
+            appointmentRequestRepository.deleteById(appointmentRequestId);
+            return new ResponseEntity<>("Appointment rejected",HttpStatus.CREATED);
+        }
+        catch (Exception e){
+            new PrintErrorMessage(e);
+            return ResponseEntity.internalServerError().body("Got Some error while updating password");
+        }
+
     }
 
     // ****************** findAllAppointmentByDoctor ****************
@@ -400,7 +453,8 @@ public class DoctorService {
     // ***************** findDoctorByCity ********************
     public ResponseEntity<?> getDoctorByCity(String city){
         try {
-            BasicQuery query = new BasicQuery("{ 'address.city' : '" + city + "' }");
+
+            BasicQuery query = new BasicQuery("{ 'address.city' : '" + city.toLowerCase() + "' }");
             List<Doctor> doctors = mongoTemplate.find(query, Doctor.class);
             return ResponseEntity.ok().body(new DoctorListResponse().returnResponse(doctors));
         }

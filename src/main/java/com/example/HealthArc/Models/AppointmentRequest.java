@@ -21,6 +21,9 @@ public class AppointmentRequest {
     String id;
     String doctorId;
     String patientId;
+    String patientName;
+    String allergy;
+    String patientPhone;
     @CreatedDate
     private Date createdAt = new Date();
     @LastModifiedDate
