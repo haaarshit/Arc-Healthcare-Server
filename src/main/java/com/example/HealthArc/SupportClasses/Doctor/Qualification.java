@@ -13,8 +13,6 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class Qualification {
     private String degree;
-
     private String university;
-
     private Integer year;
 }

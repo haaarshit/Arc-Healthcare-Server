@@ -271,31 +271,6 @@ public class DoctorService {
     }
 
 
-    // remove qualification
-    public ResponseEntity<?>  removeQualification(Qualification qualification, String reqHeader){
-        try{
-            String username =  jwtService.extractUsername(reqHeader.substring(7));
-
-            Optional<Doctor> isDoctor = doctorRepository.findByEmail(username);
-
-            if(isDoctor.isEmpty()){
-                return ResponseEntity.badRequest().body("Invalid doctor");
-            }
-            Doctor doctor = isDoctor.get();
-
-            Optional.ofNullable(qualification).ifPresent(doctor.getProfessionalInfo().getQualifications()::remove);
-
-            Doctor response = doctorRepository.save(doctor);
-            return ResponseEntity.ok().body(new DoctorResponse().returnResponse(response));
-        }
-        catch (Exception e){
-            new PrintErrorMessage(e);
-            return ResponseEntity.internalServerError().body("Got Some error while updating professional info");
-        }
-    }
-
-
-
     // add work experience
     public ResponseEntity<?>  addWorkExperiece(WorkExperience workExperience, String reqHeader){
         try{
