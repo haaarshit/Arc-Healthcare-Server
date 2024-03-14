@@ -212,6 +212,46 @@ public class PatientService {
         }
     }
 
+    // update height
+    public ResponseEntity<?> updateHeight(int height, String reqHeader){
+        try{
+            String username =  jwtService.extractUsername(reqHeader.substring(7));
+
+            Optional<Patient> isPatient = patientRepository.findByEmail(username);
+
+            if(isPatient.isEmpty()){
+                return ResponseEntity.badRequest().body("Invalid doctor");
+            }
+            Patient patient = isPatient.get();
+            patient.setHeight(height);
+            Patient response = patientRepository.save(patient);
+            return ResponseEntity.ok().body(new PatientResponse().returnResponse(response));
+        }
+        catch (Exception e){
+            new PrintErrorMessage(e);
+            return ResponseEntity.internalServerError().body("Got Some error while updating avatar");
+        }
+    }
+    // update weight
+    public ResponseEntity<?> updateWeight(double weight, String reqHeader){
+        try{
+            String username =  jwtService.extractUsername(reqHeader.substring(7));
+
+            Optional<Patient> isPatient = patientRepository.findByEmail(username);
+
+            if(isPatient.isEmpty()){
+                return ResponseEntity.badRequest().body("Invalid doctor");
+            }
+            Patient patient = isPatient.get();
+            patient.setWeight(weight);
+            Patient response = patientRepository.save(patient);
+            return ResponseEntity.ok().body(new PatientResponse().returnResponse(response));
+        }
+        catch (Exception e){
+            new PrintErrorMessage(e);
+            return ResponseEntity.internalServerError().body("Got Some error while updating avatar");
+        }
+    }
     // ****************** Update Address *************************
     public ResponseEntity<?> updateAddress(Address address, String reqHeader){
         try{

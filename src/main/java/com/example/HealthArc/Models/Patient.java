@@ -35,7 +35,6 @@ public class Patient implements UserDetails, CredentialsContainer {
     private String phone;
     private String password;
     private String avatar;
-
     private PatientPersonalInfo personalInfo;
     private List<Allergy> allergies;
     private String bloodType;

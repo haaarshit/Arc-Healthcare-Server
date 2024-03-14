@@ -32,9 +32,13 @@ public class ProtectedPatientController {
     ResponseEntity<?> updatePatientAvatar(@RequestBody String avatarBase64, @RequestHeader("Authorization") String header){
         return patientService.updateAvatar(avatarBase64,header);
     }
-    @PutMapping("/update-address")
-    ResponseEntity<?> updatePatientAddress(@RequestBody Address address, @RequestHeader("Authorization") String header){
-        return patientService.updateAddress(address,header);
+    @PutMapping("/update-weight")
+    ResponseEntity<?> updateWeight(@RequestBody double weight, @RequestHeader("Authorization") String header){
+        return patientService.updateWeight(weight,header);
+    }
+    @PutMapping("/update-height")
+    ResponseEntity<?> updateHeight(@RequestBody int height, @RequestHeader("Authorization") String header){
+        return patientService.updateHeight(height,header);
     }
 
     // ************************ Add Review *******************************//

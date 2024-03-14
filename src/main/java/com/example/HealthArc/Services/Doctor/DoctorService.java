@@ -270,7 +270,6 @@ public class DoctorService {
         }
     }
 
-
     // add work experience
     public ResponseEntity<?>  addWorkExperiece(WorkExperience workExperience, String reqHeader){
         try{
