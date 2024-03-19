@@ -170,7 +170,9 @@ public class DoctorService {
             Doctor doctor = isDoctor.get();
             doctor.getReviews().add(review);
             doctor.setTotalRating(doctor.getTotalRating() + review.getRating());
-            doctor.setPeopleRated(doctor.getPeopleRated()+1); // can find average rating from = total_rating / people_rated
+            doctor.setPeopleRated(doctor.getPeopleRated()+1); // can find average rating from = total_rating / people_rated\
+            String message = String.format("%s has said something about you, check on Health Arc",review.getPatientName());
+            emailService.sendSimpleEmail(doctor.getEmail(),"Some reviewd you",message);
             doctorRepository.save(doctor);
 
             return ResponseEntity.ok().body(doctor);
@@ -334,6 +336,8 @@ public class DoctorService {
             appointment.setStatus("pending");
             Appointment appointment1 = appointmentService.createAppointment(appointment);
             appointmentRequestRepository.deleteById(appointmentRequestId);
+            String message = String.format("Your appointment request  for %s has been accepted, Your appointment has scheduled on %s.",doctor.getPersonalInfo().getFirstName() + " "+doctor.getPersonalInfo().getLastName(),appointment.getAppointmentDate().toString());
+            emailService.sendSimpleEmail(patient.getEmail(),"Appointment get accepted",message);
             return new ResponseEntity<>(appointment1,HttpStatus.CREATED);
         }
         catch (Exception e){

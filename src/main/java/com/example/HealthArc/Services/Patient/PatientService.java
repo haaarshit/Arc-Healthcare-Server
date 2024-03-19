@@ -109,11 +109,6 @@ public class PatientService {
         UserDetails userDetails = patientUserDetailService.loadUserByUsername(email);
         String token = this.jwtService.generateToken(userDetails);
         // cookie
-//        Cookie cookie = new Cookie("token",token);
-//        cookie.setMaxAge(7 * 24 * 60 * 60);
-//        cookie.setSecure(true);
-//        cookie.setHttpOnly(true);
-//        servletResponse.addCookie(cookie);
         HttpHeaders header = new HttpHeaders();
         header.set("token",token);
 
@@ -324,15 +319,14 @@ public class PatientService {
         try{
             String username =  jwtService.extractUsername(reqHeader.substring(7));
 
-            Optional<Patient> isPatient = patientRepository.findByEmail(username);
+            Patient patient = patientRepository.findByEmail(username).orElseThrow();
 
-            if(isPatient.isEmpty()){
-                return ResponseEntity.badRequest().body("Invalid Patient");
-            }
-            Patient patient = isPatient.get();
             if(appointmentReq.getDoctorId()== null)  return ResponseEntity.internalServerError().body("Doctor Id should not be null");
+            Doctor doctor = doctorRepository.findById(appointmentReq.getDoctorId()).orElseThrow();
             appointmentReq.setPatientId(patient.getId());
             appointmentRequestRepository.save(appointmentReq);
+            String message = String.format("Your appointment request for %s on date %s has been sent to %s",appointmentReq.getAllergy(),appointmentReq.getCreatedAt().toString(),doctor.getPersonalInfo().getFirstName()+" "+doctor.getPersonalInfo().getLastName());
+            emailService.sendSimpleEmail(patient.getEmail(),"Appointment Request",message);
             return new ResponseEntity<>("Request send successfull",HttpStatus.CREATED);
         }
         catch (Exception e){
