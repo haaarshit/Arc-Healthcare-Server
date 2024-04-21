@@ -24,6 +24,5 @@ public class PatientController {
     ResponseEntity<?> loginPatient(@RequestBody UserRequest request,HttpServletResponse response){
         return patientService.loginPatient(request,response);
     }
-    // get patient by id
 
 }

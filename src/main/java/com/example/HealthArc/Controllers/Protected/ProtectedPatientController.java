@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/auth/patient")
+@CrossOrigin(origins = "#{@healthArcApplication.getAllowedOrigins()}")
 public class ProtectedPatientController {
 
     @Autowired

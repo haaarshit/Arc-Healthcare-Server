@@ -17,7 +17,7 @@ public class DoctorController {
     @Autowired
     DoctorService doctorService;
 
-    // *************************** doctor signup *******************************//
+    // *************************** doctor signup ******************************* //
     @PostMapping("/add")
     ResponseEntity<?> addDoctor(@RequestBody Doctor doctor,HttpServletResponse response){
         return doctorService.addDoctor(doctor,response);
@@ -29,19 +29,10 @@ public class DoctorController {
         return doctorService.loginDoctor(userRequest,response);
     }
 
-    // ****************************  get all doctors    ***********************************//
+    // ****************************  get all doctors    *********************************** //
     @GetMapping("/all")
     ResponseEntity<?> getAllDoctor() {
         return doctorService.getAllDoctors();
     }
-
-
-
-    // ****************************  get doctor by id   **********************************//
-//    @GetMapping("/{id}")
-//    ResponseEntity<?> getDoctorById(@PathVariable("id") String id){
-//        return doctorService.getDoctorById(id);
-//    }
-
 
 }

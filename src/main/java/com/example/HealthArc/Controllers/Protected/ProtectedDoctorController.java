@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/auth/doctor")
-@CrossOrigin(origins = "http://localhost:3000")
+//@CrossOrigin(origins = "#{corsConfigurer().allowedOrigins()}")
+@CrossOrigin(origins = "#{@healthArcApplication.getAllowedOrigins()}")
 public class ProtectedDoctorController {
     @Autowired
     JwtService service;
